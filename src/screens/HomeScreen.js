@@ -6,26 +6,10 @@ import {getMovies} from '../api/getMovies';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
-  const [data, setData] = useState();
-
-  useEffect(() => {
-    // (async function () {
-    //   const data = await getMovies();
-    //   console.log(data);
-    // })();
-
-    const fetching = async () => {
-      const movies = await getMovies();
-      setData(movies);
-      console.log(movies);
-    };
-
-    fetching().catch(e => e);
-  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
-      <List data={data} />
+      <List />
 
       <Button title="Press" onPress={() => getMoviesFromApiAsync()} />
     </SafeAreaView>

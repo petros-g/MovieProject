@@ -5,13 +5,29 @@ import {
   Text,
   TouchableOpacity,
   Image,
+  Button,
 } from 'react-native';
-import React from 'react';
-import {getMovieDetails} from '../api/getMovies';
+import React, {useEffect, useState} from 'react';
+import {getMovieDetails, getMovies} from '../api/getMovies';
 import {useNavigation} from '@react-navigation/native';
 
-const List = ({data}) => {
+const List = () => {
   const navigation = useNavigation();
+  const [data, setData] = useState();
+
+  useEffect(() => {
+    // (async function () {
+    //   const data = await getMovies();
+    //   console.log(data);
+    // })();
+
+    const fetching = async () => {
+      await getMovies().then(movies => setData(movies.results));
+    };
+
+    fetching().catch(e => e);
+  }, []);
+  console.log(data);
   const renderItem = ({item}) => {
     return (
       <View style={styles.item}>
@@ -39,8 +55,15 @@ const List = ({data}) => {
   return (
     <FlatList
       ListHeaderComponent={<Text>Hello</Text>}
-      ListFooterComponent={<Text>Load more</Text>}
-      data={data?.results}
+      ListFooterComponent={
+        <Button
+          title="Load more"
+          onPress={() =>
+            getMovies(2).then(movies => setData([...data, ...movies.results]))
+          }
+        />
+      }
+      data={data}
       renderItem={renderItem}
       keyExtractor={item => item.id}
     />
