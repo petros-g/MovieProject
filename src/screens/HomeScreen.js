@@ -18,11 +18,7 @@ const HomeScreen = () => {
   }, []);
   return (
     <SafeAreaView style={styles.container}>
-      {data ? (
-        <List data={data} setData={setData} />
-      ) : (
-        <ActivityIndicator size="large" />
-      )}
+      <List data={data} setData={setData} />
     </SafeAreaView>
   );
 };
