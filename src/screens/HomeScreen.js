@@ -1,17 +1,28 @@
-import {Button, SafeAreaView, StyleSheet, Text, View} from 'react-native';
 import React, {useEffect, useState} from 'react';
-import {useNavigation} from '@react-navigation/native';
-import List from '../components/List';
+import {ActivityIndicator, SafeAreaView, StyleSheet} from 'react-native';
 import {getMovies} from '../api/getMovies';
 
-const HomeScreen = () => {
-  const navigation = useNavigation();
+import List from '../components/List';
 
+const HomeScreen = () => {
+  const [data, setData] = useState();
+  useEffect(() => {
+    (async function () {
+      try {
+        const response = await getMovies();
+        setData(response.results);
+      } catch (error) {
+        console.log(error);
+      }
+    })();
+  }, []);
   return (
     <SafeAreaView style={styles.container}>
-      <List />
-
-      <Button title="Press" onPress={() => getMoviesFromApiAsync()} />
+      {data ? (
+        <List data={data} setData={setData} />
+      ) : (
+        <ActivityIndicator size="large" />
+      )}
     </SafeAreaView>
   );
 };

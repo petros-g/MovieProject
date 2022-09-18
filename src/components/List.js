@@ -11,23 +11,9 @@ import React, {useEffect, useState} from 'react';
 import {getMovieDetails, getMovies} from '../api/getMovies';
 import {useNavigation} from '@react-navigation/native';
 
-const List = () => {
+const List = ({data, setData}) => {
   const navigation = useNavigation();
-  const [data, setData] = useState();
-
-  useEffect(() => {
-    // (async function () {
-    //   const data = await getMovies();
-    //   console.log(data);
-    // })();
-
-    const fetching = async () => {
-      await getMovies().then(movies => setData(movies.results));
-    };
-
-    fetching().catch(e => e);
-  }, []);
-  console.log(data);
+  const [pageNumber, setPageNumber] = useState(2);
   const renderItem = ({item}) => {
     return (
       <View style={styles.item}>
@@ -35,7 +21,10 @@ const List = () => {
           style={styles.button}
           onPress={() =>
             getMovieDetails(item.id).then(data =>
-              navigation.navigate('Movie Details', {detailData: data}),
+              setTimeout(
+                () => navigation.navigate('Movie Details', {detailData: data}),
+                2000,
+              ),
             )
           }>
           <Image
@@ -51,7 +40,7 @@ const List = () => {
       </View>
     );
   };
-
+  console.log(data);
   return (
     <FlatList
       ListHeaderComponent={<Text>Hello</Text>}
@@ -59,7 +48,10 @@ const List = () => {
         <Button
           title="Load more"
           onPress={() =>
-            getMovies(2).then(movies => setData([...data, ...movies.results]))
+            getMovies(pageNumber).then(
+              movies => setData([...data, ...movies.results]),
+              setPageNumber(pageNumber + 1),
+            )
           }
         />
       }
@@ -78,7 +70,7 @@ const styles = StyleSheet.create({
     height: 300,
     borderRadius: 20,
   },
-  item: {marginVertical: 100},
+  item: {marginVertical: 10},
 
   button: {
     alignItems: 'center',
