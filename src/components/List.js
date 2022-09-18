@@ -7,14 +7,21 @@ import {
   Image,
 } from 'react-native';
 import React from 'react';
+import {getMovieDetails} from '../api/getMovies';
+import {useNavigation} from '@react-navigation/native';
 
 const List = ({data}) => {
+  const navigation = useNavigation();
   const renderItem = ({item}) => {
     return (
       <View style={styles.item}>
         <TouchableOpacity
           style={styles.button}
-          onPress={() => console.log(item.id)}>
+          onPress={() =>
+            getMovieDetails(item.id).then(data =>
+              navigation.navigate('Movie Details', {detailData: data}),
+            )
+          }>
           <Image
             resizeMode="center"
             style={styles.image}
