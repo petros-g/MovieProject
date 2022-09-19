@@ -1,24 +1,12 @@
-import React, {useEffect, useState} from 'react';
-import {ActivityIndicator, SafeAreaView, StyleSheet} from 'react-native';
-import {getMovies} from '../api/getMovies';
+import React from 'react';
+import {SafeAreaView, StyleSheet} from 'react-native';
 
 import List from '../components/List';
 
 const HomeScreen = () => {
-  const [data, setData] = useState();
-  useEffect(() => {
-    (async function () {
-      try {
-        const response = await getMovies();
-        setData(response.results);
-      } catch (error) {
-        console.log(error);
-      }
-    })();
-  }, []);
   return (
     <SafeAreaView style={styles.container}>
-      <List data={data} setData={setData} />
+      <List />
     </SafeAreaView>
   );
 };
