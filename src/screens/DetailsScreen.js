@@ -30,13 +30,13 @@ const DetailsScreen = ({route}) => {
             {title} {adult && '🔞'}
           </Text>
           <Text style={styles.title}>
-            ⭐{vote_average.toFixed(1)}
+            ⭐{vote_average?.toFixed(1)}
             <Text style={{fontSize: 13}}> /10</Text>
           </Text>
         </View>
         <Text style={styles.text}>
-          {release_date.substring(0, 4)} |{'  '}
-          {genres.map(item => `${item.name} `)} | {runtime} mins
+          {release_date?.substring(0, 4)} |{'  '}
+          {genres?.map(item => `${item.name} `)} | {runtime} mins
         </Text>
         <Text style={styles.tagline}>"{tagline}"</Text>
         <View style={{alignItems: 'center', marginTop: 20}}>
@@ -44,7 +44,7 @@ const DetailsScreen = ({route}) => {
           <Text style={styles.summary}>{overview}</Text>
         </View>
         <Text style={styles.languagesText}>
-          Spoken Languages:{spoken_languages.map(item => `  ${item.name}`)}
+          Spoken Languages:{spoken_languages?.map(item => `  ${item.name}`)}
         </Text>
       </ScrollView>
     </View>

@@ -7,6 +7,7 @@ import {
   Image,
   Button,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {getMovieDetails, getMovies} from '../api/getMovies';
@@ -26,7 +27,7 @@ const List = () => {
         const response = await getMovies();
         setData(response.results);
       } catch (error) {
-        console.log(error);
+        Alert.alert('Error!', `${error.message}`, [{text: 'OK'}]);
       }
     })();
   }, []);
@@ -37,13 +38,7 @@ const List = () => {
         <TouchableOpacity
           disabled={state.isFetching}
           style={styles.touchableOp}
-          onPress={() => {
-            setState({...state, isFetching: true});
-            getMovieDetails(item.id).then(data => {
-              navigation.navigate('Movie Details', {detailData: data}),
-                setState({...state, isFetching: false});
-            });
-          }}>
+          onPress={() => onClick(item)}>
           <Image
             accessibilityLabel="Image that shows movie content"
             resizeMode="center"
@@ -61,6 +56,29 @@ const List = () => {
     );
   };
 
+  const onClick = item => {
+    setState({...state, isFetching: true});
+    try {
+      item
+        ? //If a movie is pressed runs this:
+          getMovieDetails(item.id).then(data => {
+            navigation.navigate('Movie Details', {detailData: data}),
+              setState({...state, isFetching: false});
+          })
+        : //if load more button is pressed runs this:
+          getMovies(state.pageNumber).then(movies => {
+            setData([...data, ...movies.results]);
+            setState({
+              pageNumber: state.pageNumber + 1,
+              isFetching: false,
+            });
+          });
+    } catch (error) {
+      Alert.alert('Error!', `${error.message}`, [{text: 'OK'}]);
+      setState({...state, isFetching: false});
+    }
+  };
+
   return (
     <View>
       {state.isFetching && (
@@ -74,6 +92,8 @@ const List = () => {
       <FlatList
         contentContainerStyle={{padding: 10}}
         numColumns={2}
+        ListHeaderComponent={<Text style={styles.title}>Popular Movies</Text>}
+        maxToRenderPerBatch={10}
         ListEmptyComponent={<ActivityIndicator animating={true} size="large" />}
         ListFooterComponentStyle={styles.buttonFooter}
         ListFooterComponent={
@@ -82,20 +102,7 @@ const List = () => {
               disabled={state.isFetching}
               accessibilityLabel="Press to load more movies"
               title="Load more movies ..."
-              onPress={() => {
-                setState({isFetching: true});
-                try {
-                  getMovies(state.pageNumber).then(movies => {
-                    setData([...data, ...movies.results]);
-                    setState({
-                      pageNumber: state.pageNumber + 1,
-                      isFetching: false,
-                    });
-                  });
-                } catch (error) {
-                  setState({isFetching: false});
-                }
-              }}
+              onPress={() => onClick()}
             />
           )
         }
@@ -112,15 +119,11 @@ export default List;
 const styles = StyleSheet.create({
   image: {
     width: '100%',
-
     height: 250,
-
     borderRadius: 20,
   },
   item: {marginVertical: 5, flex: 1},
-
   touchableOp: {padding: 5},
-
   title: {
     fontSize: 18,
     alignSelf: 'center',
@@ -132,8 +135,9 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     zIndex: 1,
     backgroundColor: 'white',
-    opacity: 0.7,
-    padding: 350,
+    opacity: 0.8,
+    height: '100%',
+    width: '100%',
   },
   text: {
     alignSelf: 'center',
