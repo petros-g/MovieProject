@@ -93,7 +93,6 @@ const List = () => {
         contentContainerStyle={{padding: 10}}
         numColumns={2}
         ListHeaderComponent={<Text style={styles.title}>Popular Movies</Text>}
-        maxToRenderPerBatch={10}
         ListEmptyComponent={<ActivityIndicator animating={true} size="large" />}
         ListFooterComponentStyle={styles.buttonFooter}
         ListFooterComponent={
