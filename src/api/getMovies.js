@@ -6,9 +6,11 @@ export function getMovies(page = 1) {
   const data = fetch(ApiUrl)
     .then(response => response.json())
     .then(data => {
+      if (data.success == false) {
+        throw new Error(`${data.status_message}`);
+      }
       return data;
-    })
-    .catch(error => console.log(error));
+    });
 
   return data;
 }
@@ -19,9 +21,11 @@ export function getMovieDetails(id) {
   const data = fetch(ApiUrl)
     .then(response => response.json())
     .then(data => {
+      if (data.success == false) {
+        throw new Error(`${data.status_message}`);
+      }
       return data;
-    })
-    .catch(error => console.log(error));
+    });
 
   return data;
 }

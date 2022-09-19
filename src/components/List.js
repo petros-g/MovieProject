@@ -22,13 +22,12 @@ const List = () => {
   });
 
   useEffect(() => {
-    (async function () {
-      try {
-        const response = await getMovies();
-        setData(response.results);
-      } catch (error) {
-        Alert.alert('Error!', `${error.message}`, [{text: 'OK'}]);
-      }
+    (function () {
+      getMovies()
+        .then(response => setData(response.results))
+        .catch(error =>
+          Alert.alert('Error!', `${error.message}`, [{text: 'OK'}]),
+        );
     })();
   }, []);
 
@@ -58,25 +57,30 @@ const List = () => {
 
   const onClick = item => {
     setState({...state, isFetching: true});
-    try {
-      item
-        ? //If a movie is pressed runs this:
-          getMovieDetails(item.id).then(data => {
+    item
+      ? //If a movie is pressed runs this:
+        getMovieDetails(item.id)
+          .then(data => {
             navigation.navigate('Movie Details', {detailData: data}),
               setState({...state, isFetching: false});
           })
-        : //if load more button is pressed runs this:
-          getMovies(state.pageNumber).then(movies => {
+          .catch(error => {
+            Alert.alert('Error!', `${error.message}`, [{text: 'OK'}]);
+            setState({...state, isFetching: false});
+          })
+      : //if load more button is pressed runs this:
+        getMovies(state.pageNumber)
+          .then(movies => {
             setData([...data, ...movies.results]);
             setState({
               pageNumber: state.pageNumber + 1,
               isFetching: false,
             });
+          })
+          .catch(error => {
+            Alert.alert('Error!', `${error.message}`, [{text: 'OK'}]);
+            setState({...state, isFetching: false});
           });
-    } catch (error) {
-      Alert.alert('Error!', `${error.message}`, [{text: 'OK'}]);
-      setState({...state, isFetching: false});
-    }
   };
 
   return (
