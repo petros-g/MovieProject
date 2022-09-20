@@ -49,7 +49,7 @@ const List = () => {
             Alert.alert('Error!', `${error.message}`, [{text: 'OK'}]);
             setState({...state, isFetching: false});
           })
-          }>
+          }}>
           <Image
             accessibilityLabel="Image that shows movie content"
             resizeMode="center"
@@ -92,8 +92,7 @@ const List = () => {
               title="Load more movies ..."
               onPress={() => {
               setState({...state, isFetching: true});
-              getMovies(state.pageNumber)
-          .then(movies => {
+              getMovies(state.pageNumber).then(movies => {
             setData([...data, ...movies.results]);
             setState({
               pageNumber: state.pageNumber + 1,
