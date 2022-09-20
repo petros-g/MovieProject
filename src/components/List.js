@@ -22,13 +22,13 @@ const List = () => {
   });
 
   useEffect(() => {
-    (function () {
+
       getMovies()
         .then(response => setData(response.results))
         .catch(error =>
           Alert.alert('Error!', `${error.message}`, [{text: 'OK'}]),
         );
-    })();
+    
   }, []);
 
   const renderItem = ({item}) => {
@@ -37,7 +37,19 @@ const List = () => {
         <TouchableOpacity
           disabled={state.isFetching}
           style={styles.touchableOp}
-          onPress={() => onClick(item)}>
+          onPress={() => {
+          setState({...state, isFetching: true});
+    
+        getMovieDetails(item.id)
+          .then(data => {
+            navigation.navigate('Movie Details', {detailData: data}),
+              setState({...state, isFetching: false});
+          })
+          .catch(error => {
+            Alert.alert('Error!', `${error.message}`, [{text: 'OK'}]);
+            setState({...state, isFetching: false});
+          })
+          }>
           <Image
             accessibilityLabel="Image that shows movie content"
             resizeMode="center"
@@ -55,33 +67,6 @@ const List = () => {
     );
   };
 
-  const onClick = item => {
-    setState({...state, isFetching: true});
-    item
-      ? //If a movie is pressed runs this:
-        getMovieDetails(item.id)
-          .then(data => {
-            navigation.navigate('Movie Details', {detailData: data}),
-              setState({...state, isFetching: false});
-          })
-          .catch(error => {
-            Alert.alert('Error!', `${error.message}`, [{text: 'OK'}]);
-            setState({...state, isFetching: false});
-          })
-      : //if load more button is pressed runs this:
-        getMovies(state.pageNumber)
-          .then(movies => {
-            setData([...data, ...movies.results]);
-            setState({
-              pageNumber: state.pageNumber + 1,
-              isFetching: false,
-            });
-          })
-          .catch(error => {
-            Alert.alert('Error!', `${error.message}`, [{text: 'OK'}]);
-            setState({...state, isFetching: false});
-          });
-  };
 
   return (
     <View>
@@ -105,7 +90,21 @@ const List = () => {
               disabled={state.isFetching}
               accessibilityLabel="Press to load more movies"
               title="Load more movies ..."
-              onPress={() => onClick()}
+              onPress={() => {
+              setState({...state, isFetching: true});
+              getMovies(state.pageNumber)
+          .then(movies => {
+            setData([...data, ...movies.results]);
+            setState({
+              pageNumber: state.pageNumber + 1,
+              isFetching: false,
+            });
+          })
+          .catch(error => {
+            Alert.alert('Error!', `${error.message}`, [{text: 'OK'}]);
+            setState({...state, isFetching: false});
+          });
+              }}
             />
           )
         }
