@@ -3,18 +3,15 @@ import {
   FlatList,
   View,
   Text,
-  TouchableOpacity,
-  Image,
   Button,
   ActivityIndicator,
   Alert,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
-import {getMovieDetails, getMovies} from '../api/getMovies';
-import {useNavigation} from '@react-navigation/native';
+import {getMovies} from '../api/getMovies';
+import RenderItemList from './RenderItemList';
 
 const List = () => {
-  const navigation = useNavigation();
   const [data, setData] = useState();
   const [state, setState] = useState({
     pageNumber: 2,
@@ -22,7 +19,6 @@ const List = () => {
   });
 
   useEffect(() => {
-
       getMovies()
         .then(response => setData(response.results))
         .catch(error =>
@@ -30,43 +26,6 @@ const List = () => {
         );
     
   }, []);
-
-  const renderItem = ({item}) => {
-    return (
-      <View style={styles.item}>
-        <TouchableOpacity
-          disabled={state.isFetching}
-          style={styles.touchableOp}
-          onPress={() => {
-          setState({...state, isFetching: true});
-    
-        getMovieDetails(item.id)
-          .then(data => {
-            navigation.navigate('Movie Details', {detailData: data}),
-              setState({...state, isFetching: false});
-          })
-          .catch(error => {
-            Alert.alert('Error!', `${error.message}`, [{text: 'OK'}]);
-            setState({...state, isFetching: false});
-          })
-          }}>
-          <Image
-            accessibilityLabel="Image that shows movie content"
-            resizeMode="center"
-            style={styles.image}
-            source={{
-              uri: `https://image.tmdb.org/t/p/original${item.poster_path}`,
-            }}
-          />
-          <Text style={styles.title}>{item.title}</Text>
-          <Text style={styles.text}>
-            Rating: ★{item.vote_average.toFixed(1)}{' '}
-          </Text>
-        </TouchableOpacity>
-      </View>
-    );
-  };
-
 
   return (
     <View>
@@ -108,7 +67,9 @@ const List = () => {
           )
         }
         data={data}
-        renderItem={renderItem}
+        renderItem={({item}) => (
+          <RenderItemList state={state} setState={setState} item={item} />
+        )}
         keyExtractor={item => item.id}
       />
     </View>
@@ -118,13 +79,6 @@ const List = () => {
 export default List;
 
 const styles = StyleSheet.create({
-  image: {
-    width: '100%',
-    height: 250,
-    borderRadius: 20,
-  },
-  item: {marginVertical: 5, flex: 1},
-  touchableOp: {padding: 5},
   title: {
     fontSize: 18,
     alignSelf: 'center',
@@ -139,10 +93,5 @@ const styles = StyleSheet.create({
     opacity: 0.8,
     height: '100%',
     width: '100%',
-  },
-  text: {
-    alignSelf: 'center',
-    fontSize: 13,
-    color: 'black',
   },
 });
