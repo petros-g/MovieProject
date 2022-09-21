@@ -19,11 +19,12 @@ const List = () => {
   });
 
   useEffect(() => {
-    getMovies()
-      .then(response => setData(response.results))
-      .catch(error =>
-        Alert.alert('Error!', `${error.message}`, [{text: 'OK'}]),
-      );
+      getMovies()
+        .then(response => setData(response.results))
+        .catch(error =>
+          Alert.alert('Error!', `${error.message}`, [{text: 'OK'}]),
+        );
+    
   }, []);
 
   return (
@@ -49,19 +50,18 @@ const List = () => {
               accessibilityLabel="Press to load more movies"
               title="Load more movies ..."
               onPress={() => {
-                setState({...state, isFetching: true});
-                getMovies(state.pageNumber)
-                  .then(movies => {
-                    setData([...data, ...movies.results]);
-                    setState({
-                      pageNumber: state.pageNumber + 1,
-                      isFetching: false,
-                    });
-                  })
-                  .catch(error => {
-                    Alert.alert('Error!', `${error.message}`, [{text: 'OK'}]);
-                    setState({...state, isFetching: false});
-                  });
+              setState({...state, isFetching: true});
+              getMovies(state.pageNumber).then(movies => {
+            setData([...data, ...movies.results]);
+            setState({
+              pageNumber: state.pageNumber + 1,
+              isFetching: false,
+            });
+          })
+          .catch(error => {
+            Alert.alert('Error!', `${error.message}`, [{text: 'OK'}]);
+            setState({...state, isFetching: false});
+          });
               }}
             />
           )
